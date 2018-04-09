@@ -1,0 +1,152 @@
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease; }
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0; }
+
+.list-complete-enter,
+.list-complete-leave-to {
+  opacity: 0;
+  transform: translateY(30px); }
+
+.list-complete-leave-active {
+  position: absolute;
+  visibility: hidden; }
+
+*,
+*:after,
+*:before {
+  box-sizing: border-box; }
+
+.datepicker-trigger {
+  position: relative;
+  overflow: visible; }
+
+.airbnb-style-datepicker-wrapper {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  text-align: center;
+  overflow: hidden;
+  background-color: white;
+  border: 1px solid #d9d9d9;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175); }
+  .airbnb-style-datepicker-wrapper.full-screen {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: none;
+    z-index: 100; }
+  .airbnb-style-datepicker-wrapper .datepicker-inner-wrapper {
+    transition: all 0.3s ease;
+    position: relative; }
+  .airbnb-style-datepicker-wrapper .datepicker-header {
+    position: relative; }
+  .airbnb-style-datepicker-wrapper .change-month-button {
+    position: absolute;
+    top: 12px;
+    z-index: 10;
+    background: white; }
+    .airbnb-style-datepicker-wrapper .change-month-button.previous {
+      left: 0;
+      padding-left: 15px; }
+    .airbnb-style-datepicker-wrapper .change-month-button.next {
+      right: 0;
+      padding-right: 15px; }
+    .airbnb-style-datepicker-wrapper .change-month-button button {
+      background-color: white;
+      border: none;
+      padding: 4px 8px;
+      cursor: pointer; }
+    .airbnb-style-datepicker-wrapper .change-month-button svg {
+      height: 19px;
+      width: 19px;
+      fill: #82888a; }
+  .airbnb-style-datepicker-wrapper .days-legend {
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    padding: 0 10px; }
+  .airbnb-style-datepicker-wrapper .day-title {
+    display: inline-block;
+    width: 14.28571%;
+    text-align: center;
+    margin-bottom: 4px;
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 0.8em;
+    margin-left: -1px;
+    font-weight: bold; }
+  .airbnb-style-datepicker-wrapper .month-table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: white;
+    width: 100%;
+    max-width: 100%; }
+  .airbnb-style-datepicker-wrapper .month {
+    transition: all 0.3s ease;
+    display: inline-block;
+    padding: 15px; }
+    .airbnb-style-datepicker-wrapper .month.hidden {
+      height: auto;
+      visibility: hidden; }
+  .airbnb-style-datepicker-wrapper .month-name {
+    font-size: 1.3em;
+    text-align: center;
+    margin: 0 0 30px;
+    line-height: 1.4em;
+    font-weight: normal; }
+  .airbnb-style-datepicker-wrapper .day {
+    line-height: normal;
+    height: 26px;
+    padding: 0;
+    overflow: hidden; }
+    .airbnb-style-datepicker-wrapper .day:not(.disabled):hover {
+      background-color: #e4e7e7; }
+    .airbnb-style-datepicker-wrapper .day.disabled, .airbnb-style-datepicker-wrapper .day.empty {
+      opacity: 0.2; }
+      .airbnb-style-datepicker-wrapper .day.disabled button, .airbnb-style-datepicker-wrapper .day.empty button {
+        cursor: default; }
+    .airbnb-style-datepicker-wrapper .day.empty {
+      border: none; }
+    .airbnb-style-datepicker-wrapper .day.empty:hover {
+      background-color: #fff; }
+  .airbnb-style-datepicker-wrapper .day-button {
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    text-align: center;
+    user-select: none;
+    font-size: 15px;
+    font-weight: inherit;
+    padding: 0; }
+  .airbnb-style-datepicker-wrapper .action-buttons {
+    min-height: 50px;
+    padding-top: 10px; }
+    .airbnb-style-datepicker-wrapper .action-buttons button {
+      display: block;
+      position: relative;
+      background: transparent;
+      border: none;
+      font-weight: normal;
+      font-size: 14px;
+      cursor: pointer; }
+      .airbnb-style-datepicker-wrapper .action-buttons button:hover {
+        text-decoration: underline; }
+      .airbnb-style-datepicker-wrapper .action-buttons button:nth-child(1) {
+        float: left;
+        left: 15px; }
+      .airbnb-style-datepicker-wrapper .action-buttons button:nth-child(2) {
+        float: right;
+        right: 15px; }
+  .airbnb-style-datepicker-wrapper .mobile-only {
+    display: none; }
+    @media (max-width: 767px) {
+      .airbnb-style-datepicker-wrapper .mobile-only {
+        display: block; } }
+

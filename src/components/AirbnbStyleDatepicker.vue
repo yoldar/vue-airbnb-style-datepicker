@@ -8,12 +8,7 @@
       :style="showFullscreen ? undefined : wrapperStyles"
       v-click-outside="handleClickOutside"
     >
-      <div class="mobile-header mobile-only" v-if="showFullscreen">
-        <div class="mobile-close" @click="closeDatepicker">
-          <div class="icon">X</div>
-        </div>
-        <h3>{{ mobileHeader }}</h3>
-      </div>
+
       <div class="datepicker-header">
         <div class="change-month-button previous">
           <button @click="previousMonth">
@@ -45,7 +40,7 @@
             :class="{hidden: monthIndex === 0 || monthIndex > showMonths}"
             :style="monthWidthStyles"
           >
-            <div class="month-name">{{ month.monthName }} {{ month.year }}</div>
+            <div class="month-name">{{ monthNames[month.monthIndex] }} {{ month.year }}</div>
 
             <table class="month-table" role="presentation">
               <tbody>
@@ -65,10 +60,7 @@
                     :style="{
                       width: (width - 30) / 7 + 'px',
                       background: isSelected(fullDate) ? colors.selected : isInRange(fullDate) ? colors.inRange : '',
-                      color: isSelected(fullDate) ? colors.selectedText : isInRange(fullDate) ? colors.selectedText : colors.text,
-                      border: isSelected(fullDate)
-                        ? '1px double ' + colors.selected
-                        : (isInRange(fullDate) && allDatesSelected) ? '1px double ' + colors.inRangeBorder : ''
+                      color: isSelected(fullDate) ? colors.selectedText : isInRange(fullDate) ? colors.selectedText : colors.text
                     }"
                     @mouseover="() => { setHoverDate(fullDate) }"
                   >
@@ -86,7 +78,7 @@
           </div>
         </transition-group>
       </div>
-      <div class="action-buttons" v-if="mode !== 'single' && showActionButtons">
+      <div class="action-buttons mobile-only" v-if="mode !== 'single' && showActionButtons">
         <button @click="closeDatepickerCancel">{{ texts.cancel }}</button>
         <button @click="closeDatepicker" :style="{color: colors.selected}">{{ texts.apply }}</button>
       </div>
@@ -102,6 +94,7 @@ import getDaysInMonth from 'date-fns/get_days_in_month'
 import isBefore from 'date-fns/is_before'
 import isAfter from 'date-fns/is_after'
 import isValid from 'date-fns/is_valid'
+import Languages from './languages.js'
 import { debounce, copyObject, findAncestor, randomString } from './../helpers'
 
 export default {
@@ -115,17 +108,18 @@ export default {
     mode: { type: String, default: 'range' },
     offsetY: { type: Number, default: 0 },
     offsetX: { type: Number, default: 0 },
-    monthsToShow: { type: Number, default: 2 },
+    monthsToShow: { type: Number, default: 1 },
     startOpen: { type: Boolean },
-    fullscreenMobile: { type: Boolean },
+    fullscreenMobile: { type: Boolean, default: true },
     inline: { type: Boolean },
-    mobileHeader: { type: String, default: 'Select date' },
     disabledDates: { type: Array, default: () => [] },
     showActionButtons: { type: Boolean, default: true },
+    disabled: { type: Boolean, default: false },
     isTest: {
       type: Boolean,
       default: () => process.env.NODE_ENV === 'test'
-    }
+    },
+    lang: { type: String, default: 'ru' }
   },
   data() {
     return {
@@ -134,41 +128,12 @@ export default {
       showDatepicker: false,
       showMonths: 2,
       colors: {
-        selected: '#00a699',
-        inRange: '#66e2da',
+        selected: '#643184',
+        inRange: '#b98ad1',
         selectedText: '#fff',
-        text: '#565a5c',
-        inRangeBorder: '#33dacd'
+        text: '#73879c'
       },
       sundayFirst: false,
-      monthNames: [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ],
-      days: [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday'
-      ],
-      daysShort: ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'],
-      texts: {
-        apply: 'Apply',
-        cancel: 'Cancel'
-      },
       startingDate: '',
       months: [],
       width: 300,
@@ -186,6 +151,18 @@ export default {
     }
   },
   computed: {
+    translation() {
+      return Languages[this.lang]
+    },
+    daysShort() {
+      return this.translation.daysShort
+    },
+    monthNames() {
+      return this.translation.monthNames
+    },
+    texts() {
+      return this.translation.texts
+    },
     wrapperClasses() {
       return {
         'datepicker-open': this.showDatepicker,
@@ -435,22 +412,6 @@ export default {
         this.colors.selectedText =
           colors.selectedText || this.colors.selectedText
         this.colors.text = colors.text || this.colors.text
-        this.colors.inRangeBorder =
-          colors.inRangeBorder || this.colors.inRangeBorder
-      }
-      if (this.$options.monthNames && this.$options.monthNames.length === 12) {
-        this.monthNames = copyObject(this.$options.monthNames)
-      }
-      if (this.$options.days && this.$options.days.length === 7) {
-        this.days = copyObject(this.$options.days)
-      }
-      if (this.$options.daysShort && this.$options.daysShort.length === 7) {
-        this.daysShort = copyObject(this.$options.daysShort)
-      }
-      if (this.$options.texts) {
-        const texts = copyObject(this.$options.texts)
-        this.texts.apply = texts.apply || this.texts.apply
-        this.texts.cancel = texts.cancel || this.texts.cancel
       }
     },
     setStartDates() {
@@ -463,8 +424,6 @@ export default {
       this.selectedDate2 = this.dateTwo
     },
     setSundayToFirstDayInWeek() {
-      const lastDay = this.days.pop()
-      this.days.unshift(lastDay)
       const lastDayShort = this.daysShort.pop()
       this.daysShort.unshift(lastDayShort)
     },
@@ -472,12 +431,12 @@ export default {
       const firstDateOfMonth = format(date, 'YYYY-MM-01')
       const year = format(date, 'YYYY')
       const monthNumber = parseInt(format(date, 'M'))
-      const monthName = this.monthNames[monthNumber - 1]
+      const monthIndex = monthNumber - 1
 
       return {
         year,
         firstDateOfMonth,
-        monthName,
+        monthIndex,
         monthNumber,
         weeks: this.getWeeks(firstDateOfMonth)
       }
@@ -622,7 +581,7 @@ export default {
     toggleDatepicker() {
       if (this.showDatepicker) {
         this.closeDatepicker()
-      } else {
+      } else if (!this.disabled) {
         this.openDatepicker()
       }
     },
@@ -693,9 +652,8 @@ export default {
 
 $tablet: 768px;
 $color-gray: rgba(0, 0, 0, 0.2);
-$border-normal: 1px solid $color-gray;
-$border: 1px solid #e4e7e7;
 $transition-time: 0.3s;
+$border-normal: 1px solid $color-gray;
 
 *,
 *:after,
@@ -714,6 +672,8 @@ $transition-time: 0.3s;
   text-align: center;
   overflow: hidden;
   background-color: white;
+  border: 1px solid #d9d9d9;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
 
   &.full-screen {
     position: fixed;
@@ -748,14 +708,9 @@ $transition-time: 0.3s;
 
     button {
       background-color: white;
-      border: $border;
-      border-radius: 3px;
+      border: none;
       padding: 4px 8px;
       cursor: pointer;
-
-      &:hover {
-        border: 1px solid #c4c4c4;
-      }
     }
 
     svg {
@@ -778,7 +733,7 @@ $transition-time: 0.3s;
     color: rgba(0, 0, 0, 0.7);
     font-size: 0.8em;
     margin-left: -1px;
-    text-transform: lowercase;
+    font-weight: bold;
   }
 
   .month-table {
@@ -795,7 +750,7 @@ $transition-time: 0.3s;
     padding: 15px;
 
     &.hidden {
-      height: 275px;
+      height: auto;
       visibility: hidden;
     }
   }
@@ -804,13 +759,12 @@ $transition-time: 0.3s;
     text-align: center;
     margin: 0 0 30px;
     line-height: 1.4em;
-    text-transform: lowercase;
-    font-weight: bold;
+    font-weight: normal;
   }
 
   .day {
-    $size: 38px;
-    line-height: $size;
+    $size: 26px;
+    line-height: normal;
     height: $size;
     padding: 0;
     overflow: hidden;
@@ -822,12 +776,9 @@ $transition-time: 0.3s;
     &.selected,
     &.in-range {
     }
-    &.enabled {
-      border: $border;
-    }
     &.disabled,
     &.empty {
-      opacity: 0.5;
+      opacity: 0.2;
 
       button {
         cursor: default;
@@ -835,6 +786,9 @@ $transition-time: 0.3s;
     }
     &.empty {
       border: none;
+    }
+    &.empty:hover {
+      background-color: #fff;
     }
   }
   .day-button {
@@ -859,8 +813,8 @@ $transition-time: 0.3s;
       position: relative;
       background: transparent;
       border: none;
-      font-weight: bold;
-      font-size: 15px;
+      font-weight: normal;
+      font-size: 14px;
       cursor: pointer;
 
       &:hover {
@@ -877,35 +831,10 @@ $transition-time: 0.3s;
     }
   }
 
-  .mobile-header {
-    border-bottom: $border-normal;
-    position: relative;
-    padding: 15px 15px 15px 15px !important;
-    text-align: center;
-    height: 50px;
-    h3 {
-      font-size: 20px;
-      margin: 0;
-    }
-  }
   .mobile-only {
     display: none;
-    @media (max-width: 600px) {
+    @media (max-width: 767px) {
       display: block;
-    }
-  }
-  .mobile-close {
-    position: absolute;
-    top: 7px;
-    right: 5px;
-    padding: 5px;
-    z-index: 100;
-    cursor: pointer;
-    .icon {
-      position: relative;
-      font-size: 1.6em;
-      font-weight: bold;
-      padding: 0;
     }
   }
 }

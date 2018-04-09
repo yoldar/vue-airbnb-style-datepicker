@@ -20,6 +20,9 @@
             :min-date="'2018-02-28'"
             :months-to-show="2"
             :show-action-buttons="true"
+            :lang="lang"
+            :disabled="disabled"
+            :fullscreen-mobile="true"
             @date-one-selected="val => { inputDateOne = val }"
             @date-two-selected="val => { inputDateTwo = val }"
           />
@@ -41,6 +44,8 @@
             :mode="'single'"
             :date-one="inputSingleDateOne"
             :months-to-show="2"
+            :lang="lang"
+            :disabled="disabled"
             @date-one-selected="val => { inputSingleDateOne = val }"
           />
         </div>
@@ -61,6 +66,8 @@
             :months-to-show="2"
             :start-open="false"
             :offset-y="10"
+            :lang="lang"
+            :disabled="disabled"
             @date-one-selected="val => { buttonDateOne = val }"
             @date-two-selected="val => { buttonDateTwo = val }"
           />
@@ -82,6 +89,8 @@
           :fullscreen-mobile="false"
           :date-one="inlineDateOne"
           :months-to-show="2"
+          :lang="lang"
+          :disabled="disabled"
           :disabled-dates="['2018-03-30', '2018-04-10', '2018-12-14']"
           @date-one-selected="val => { inlineDateOne = val }"
         />
@@ -90,6 +99,10 @@
 
     <button @click="toggleDatepickers">Hide datepickers</button>
     <button @click="toggleAlign">Toggle alignment</button>
+    <button @click="disabled = !disabled">Toggle disabled</button>
+    <button @click="lang = 'ru'">Set locale RU</button>
+    <button @click="lang = 'kk'">Set locale KK</button>
+    <button @click="lang = 'en'">Set locale EN</button>
   </div>
 </template>
 
@@ -109,7 +122,9 @@ export default {
       sundayDateOne: '',
       sundayFirst: false,
       alignRight: false,
-      showDatepickers: true
+      showDatepickers: true,
+      lang: 'ru',
+      disabled: false
     }
   },
   computed: {},
